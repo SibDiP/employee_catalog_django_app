@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'online_employees_catalog',
+    'employees_catalog_app',
 ]
 
 MIDDLEWARE = [
