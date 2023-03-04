@@ -9,7 +9,7 @@ class Employee(models.Model):
     # TODO add positive salary validator
     salary = models.FloatField('Заработная плата')
     employment_date = models.DateField('Дата приёма на работу')
-    chief = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    chief = models.ForeignKey('self', on_delete=models.SET_NULL, verbose_name='Начальник', null=True, blank=True)
 
     def __str__(self):
         return self.name
