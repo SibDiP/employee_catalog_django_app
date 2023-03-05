@@ -11,16 +11,20 @@ class Employee(models.Model):
     employment_date = models.DateField('Дата приёма на работу')
     chief = models.ForeignKey('self', on_delete=models.SET_NULL, verbose_name='Начальник', null=True, blank=True)
 
+    hierarchy_lvl_counter = models.PositiveSmallIntegerField('Уровень иерархии', null=True, blank=True, )
+
+
     def __str__(self):
         return self.name
 
 
 def employee_post_save_chief_check(sender, instance, *args, **kwargs):
-    """Make an employee chief for himself if None is chosen when create"""
+    """Make an employee chief for himself if None is chosen when create and give a hierarchy lvl"""
     if instance.chief is None:
-        self_chief = instance
-        self_chief.chief = instance
-        self_chief.save()
+        Employee.objects.filter(pk=instance.pk).update(chief=instance, hierarchy_lvl_counter=1)
+    else:
+        instance_hierarchy_lvl_counter = instance.chief.hierarchy_lvl_counter + 1
+        Employee.objects.filter(pk=instance.pk).update(hierarchy_lvl_counter=instance_hierarchy_lvl_counter)
 
 
 post_save.connect(employee_post_save_chief_check, sender=Employee)
