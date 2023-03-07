@@ -5,3 +5,5 @@ export DJANGO_DB_USER='db_user'
 export DJANGO_DB_PASS='user_pass'
 export DJANGO_DB_HOST='127.0.0.1'
 export DJANGO_DB_PORT='5432'
+export DJANGO_SETTINGS_MODULE=online_employees_catalog.settings
+
