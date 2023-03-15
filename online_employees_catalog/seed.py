@@ -1,11 +1,11 @@
 """Fulfill DB with fake employees
 Run from shell
 """
-
+# TODO add a first employee creation logic
 import django
 django.setup()
 from django_seed import Seed
-from employees_catalog_app.models import Employee
+from employee_catalog.models import Employee
 import random
 from names_generator import generate_name
 
