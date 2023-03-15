@@ -1,13 +1,11 @@
 from django.urls import path
-from . import views
+from .views import employee_tree
 
 app_name = 'employee_catalog'
 urlpatterns = [
-    path('', views.TreeView.as_view(), name='catalog_tree'),
-    path('<int:pk>/', views.DetailView.as_view(), name='detail')
+    path('', employee_tree, name='employee_tree'),
+    # path('<int:pk>/', views.DetailView.as_view(), name='detail')
 ]
-
-from django.urls import path
 
 
 
