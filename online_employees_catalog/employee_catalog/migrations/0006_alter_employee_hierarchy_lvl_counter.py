@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('employees_catalog_app', '0005_alter_employee_hierarchy_lvl_counter'),
+        ('employee_catalog', '0005_alter_employee_hierarchy_lvl_counter'),
     ]
 
     operations = [

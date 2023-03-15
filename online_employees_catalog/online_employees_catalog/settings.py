@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_seed',
-    'employees_catalog_app',
+    'employee_catalog',
 
 ]
 

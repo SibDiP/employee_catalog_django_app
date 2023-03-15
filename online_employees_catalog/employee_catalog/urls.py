@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-app_name = 'employees_catalog_app'
+app_name = 'employee_catalog'
 urlpatterns = [
     path('', views.TreeView.as_view(), name='catalog_tree'),
     path('<int:pk>/', views.DetailView.as_view(), name='detail')

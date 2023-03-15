@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('role', models.CharField(max_length=255)),
                 ('salary', models.FloatField()),
                 ('employment_date', models.DateField(verbose_name='Дата приёма на работу')),
-                ('chief', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='employees_catalog_app.employee')),
+                ('chief', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='employee_catalog.employee')),
             ],
         ),
     ]
