@@ -1,37 +1,7 @@
+{% if lvl_1_employees %}
 <ul>
-{% for employee in employees %}
-    <li>{{ employee.name }}, {{ employee.role }}
-        <ul>
-        {% for lvl_2_subordinate in employee.employee_set.all %}
-            {% if lvl_2_subordinate.hierarchy_lvl_counter == employee.hierarchy_lvl_counter|add:1 %}
-                <li>{{ lvl_2_subordinate.name }}, {{ lvl_2_subordinate.role }}
-                    <ul>
-                    {% for lvl_3_subordinate in lvl_2_subordinate.employee_set.all %}
-                        {% if lvl_3_subordinate.hierarchy_lvl_counter == lvl_2_subordinate.hierarchy_lvl_counter|add:1 %}
-                            <li>{{ lvl_3_subordinate.name }}, {{ lvl_3_subordinate.role }}
-                                <ul>
-                                {% for lvl_4_subordinate in lvl_3_subordinate.employee_set.all %}
-                                    {% if lvl_4_subordinate.hierarchy_lvl_counter == lvl_3_subordinate.hierarchy_lvl_counter|add:1 %}
-                                        <li>{{ lvl_4_subordinate.name }}, {{ lvl_4_subordinate.role }}
-                                            <ul>
-                                            {% for lvl_5_subordinate in lvl_4_subordinate.employee_set.all %}
-                                                {% if lvl_5_subordinate.hierarchy_lvl_counter == lvl_4_subordinate.hierarchy_lvl_counter|add:1 %}
-                                                    <li>{{ lvl_5_subordinate.name }}, {{ lvl_5_subordinate.role }}</li>
-                                                {% endif %}
-                                            {% endfor %}
-                                            </ul>
-                                        </li>
-                                    {% endif %}
-                                {% endfor %}
-                                </ul>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                    </ul>
-                </li>
-            {% endif %}
-        {% endfor %}
-        </ul>
-    </li>
-{% endfor %}
+    {% for employee in lvl_1_employees %}
+        <li>{{ employee.name }}</li>
+    {% endfor %}
 </ul>
+{% endif %}
