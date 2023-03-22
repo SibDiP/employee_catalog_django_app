@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'django_seed',
     'employee_catalog',
+    'treebeard',
 
 ]
 

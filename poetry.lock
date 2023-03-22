@@ -69,6 +69,21 @@ Faker = ">=0.7.7"
 toposort = ">=1.5"
 
 [[package]]
+name = "django-treebeard"
+version = "4.6.1"
+description = "Efficient tree implementations for Django"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django-treebeard-4.6.1.tar.gz", hash = "sha256:84ab35040277d524eb77939e235568c9c856cb523cc9655793b66fe9a3ef468b"},
+    {file = "django_treebeard-4.6.1-py3-none-any.whl", hash = "sha256:89bc79a7d9ae62e8071ff1f866c83b1484c408d6082ce11cf3eca689240712f6"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+
+[[package]]
 name = "faker"
 version = "17.6.0"
 description = "Faker is a Python package that generates fake data for you."
@@ -187,4 +202,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "06183381c6ee3170cee9ff91c1e88dd5c0380ee62edc39530fcd13834e10108b"
+content-hash = "6f26f4f23f92ad04908fd93e8bcb9682f146585093b023c4ecbb76118337cc0d"
