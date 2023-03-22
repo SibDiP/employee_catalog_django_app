@@ -1,14 +1,14 @@
-from django.db.models import QuerySet
+from django.db.models import Max
 from django.shortcuts import render, get_object_or_404
 from .models import Employee
 
 
-# by hierarchy lvl 1
-def employee_tree(request) -> QuerySet:
+def employee_tree(request):
+    max_hierarchy_lvl_counter = Employee.objects.aggregate(Max('hierarchy_lvl_counter'))['hierarchy_lvl_counter__max']
     employees = Employee.objects.filter(hierarchy_lvl_counter=1)
-    context = {'lvl_1_employees': employees}
-    print(type(employees))
+    context = {'lvl_1_employees': employees, 'max_hierarchy_lvl_counter': max_hierarchy_lvl_counter}
     return render(request, 'employee_catalog/employee_catalog_tree.html', context)
+
 
 
 # by objects_list ->

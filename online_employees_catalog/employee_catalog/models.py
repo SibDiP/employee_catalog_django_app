@@ -16,9 +16,8 @@ class Employee(models.Model):
 
     hierarchy_lvl_counter = models.PositiveSmallIntegerField('Уровень иерархии', null=True, blank=True, )
 
-
     def __str__(self):
-        return self.name
+        return f'{self.name}, lvl-{self.hierarchy_lvl_counter}'
 
 
 def employee_post_save_chief_and_hierarchy_update(sender, instance, *args, **kwargs):
