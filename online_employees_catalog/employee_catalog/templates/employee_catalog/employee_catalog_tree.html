@@ -1,19 +1,14 @@
-<ul>
-{% for node in root_nodes %}
-    <li>
-        {{ node }}
+{% extends "employee_catalog/base.html" %}
+
+{% block tree %}
+  <ul>
+    {% for node in root_nodes %}
+      <li>
+        <a href="/{{ node.pk }}"> {{ node }}</a>
         {% if node.get_children %}
-            <ul>
-                {% for child in node.get_children %}
-                    <li>
-                        {{ child }}
-                        {% if child.get_children %}
-                            {% include 'employee_catalog/employee_catalog_tree.html' with root_nodes=child.get_children %}
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
+          {% include 'employee_catalog/employee_catalog_tree.html' with root_nodes=node.get_children %}
         {% endif %}
-    </li>
-{% endfor %}
-</ul>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
