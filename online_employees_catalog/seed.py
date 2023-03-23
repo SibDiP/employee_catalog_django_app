@@ -27,7 +27,11 @@ def custom_chief_provider(max_hierarchy_lvl) -> object:
     if employees.exists():
         return random.choice(employees)
     else:
-        return None
+        root = Employee.add_root(name=generate_name(style='capital'),
+                           employment_date=datetime.now() - timedelta(days=random.randint(1, 365 * 5)),
+                           role=f"Chief",
+                           salary=round(random.random() * 10000))
+        return root
 
 
 def employee_create(employee_per_chief: int, max_hierarchy_lvl: int) -> None:
