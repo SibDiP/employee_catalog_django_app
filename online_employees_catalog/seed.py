@@ -2,8 +2,19 @@
 Run from shell
 """
 # TODO add a first employee creation logic
+from decouple import config
+import os
+
+# Читаем из .env имя модуля настроек
+settings_module = config('DJANGO_SETTINGS_MODULE', default='online_employees_catalog.settings')
+
+# прокидываем в настоящие переменные окружения, что б джанго его увидал
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
+
+# Теперь django.setup() увидит нужные настройки
 import django
 django.setup()
+
 from django_seed import Seed
 from employee_catalog.models import Employee
 import random
