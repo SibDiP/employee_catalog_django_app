@@ -1,22 +1,12 @@
-from django import forms
 from django.contrib import admin
+from treebeard.admin import TreeAdmin
+from treebeard.forms import movenodeform_factory
+
 from .models import Employee
 
-class EmployeeAdminForm(forms.ModelForm):
-    class Meta:
-        model = Employee
-        fields = '__all__'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Hide the 'my_field' field in the instance creation form
-        self.fields['hierarchy_lvl_counter'].widget = forms.HiddenInput()
-
-
-class EmployeeAdmin(admin.ModelAdmin):
-    list_display = 'name', 'role', 'chief', 'salary', 'employment_date'
-    form = EmployeeAdminForm
+class EmployeeAdmin(TreeAdmin):
+    form = movenodeform_factory(Employee)
 
 
 admin.site.register(Employee, EmployeeAdmin)
-

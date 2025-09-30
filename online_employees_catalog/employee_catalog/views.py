@@ -1,28 +1,13 @@
-from django.db.models import Max
 from django.shortcuts import render, get_object_or_404
 from .models import Employee
 
 
+def specific_employee_tree(request, **kwargs):
+    node_pk = kwargs.get('pk')
+    root_node = get_object_or_404(Employee, pk=node_pk)
+    return render(request, 'employee_catalog/employee_catalog_tree.html', {'root_nodes': (root_node,)})
+
+
 def employee_tree(request):
-    max_hierarchy_lvl_counter = Employee.objects.aggregate(
-        Max('hierarchy_lvl_counter'))['hierarchy_lvl_counter__max']
-    employees = Employee.objects.filter(hierarchy_lvl_counter=2)
-    context = {
-        'lvl_1_employees': employees, 
-        'max_hierarchy_lvl_counter': max_hierarchy_lvl_counter
-        }
-    return render(
-        request, 
-        'employee_catalog/employee_catalog_tree.html', 
-        context
-        )
-
-
-
-# by objects_list ->
-def specific_employee_tree(request, pk):
-    employee = get_object_or_404(Employee, pk=pk)
-    employees = employee.employee_set.all
-    context = {'employees': employees}
-    
-    return render(request, 'employee_catalog/employee_catalog_tree.html', context)
+    root_nodes = Employee.get_root_nodes()
+    return render(request, 'employee_catalog/employee_catalog_tree.html', {'root_nodes': root_nodes})

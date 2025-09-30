@@ -1,7 +1,14 @@
-{% if lvl_1_employees %}
-<ul>
-    {% for employee in lvl_1_employees %}
-        <li>{{ employee.name }}</li>
+{% extends "employee_catalog/base.html" %}
+
+{% block tree %}
+  <ul>
+    {% for node in root_nodes %}
+      <li>
+        <a href="/{{ node.pk }}"> {{ node }}</a>
+        {% if node.get_children %}
+          {% include 'employee_catalog/employee_catalog_tree.html' with root_nodes=node.get_children %}
+        {% endif %}
+      </li>
     {% endfor %}
-</ul>
-{% endif %}
+  </ul>
+{% endblock %}
