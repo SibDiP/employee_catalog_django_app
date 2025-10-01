@@ -72,9 +72,9 @@ toposort = ">=1.5"
 name = "django-treebeard"
 version = "4.6.1"
 description = "Efficient tree implementations for Django"
-category = "main"
 optional = false
 python-versions = ">=3.8"
+groups = ["main"]
 files = [
     {file = "django-treebeard-4.6.1.tar.gz", hash = "sha256:84ab35040277d524eb77939e235568c9c856cb523cc9655793b66fe9a3ef468b"},
     {file = "django_treebeard-4.6.1-py3-none-any.whl", hash = "sha256:89bc79a7d9ae62e8071ff1f866c83b1484c408d6082ce11cf3eca689240712f6"},
@@ -270,4 +270,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "79040198ec98bbca59b2a0f46984cc31f7601a5dfcbd8a70f48ab679806d5cfa"
+content-hash = "49ad2fecf0aaf4968a541f4c663a6306654e2d5e8779212015089d64a4f29ec1"
