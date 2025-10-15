@@ -29,12 +29,12 @@ class Employee(MP_Node):
         max_digits=10,
         decimal_places=2,
         validators=[
-            MinValueValidator(0.00, message='Зарплата должна быть больше нуля')
-        ]
-        )
+            MinValueValidator(
+                0.00, message='Зарплата не может быть отрицательной')
+        ])
     
     # Атрибут MP_Node. Порядок детей с начала по role, затем по name
-    node_order_by = [role, name]
+    node_order_by = ['role', 'name']
 
     class Meta:
         """
@@ -45,7 +45,7 @@ class Employee(MP_Node):
         verbose_name_plural = 'Сотрудники'
 
     def __str__(self):
-        return f'{self.name} {self.role} - уровень {self.depth}'
+        return f'{self.role} | {self.name} | уровень иерархии {self.depth}'
     
     @property
     def hierarchy_lvl(self):
