@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+</head>
+<body>
+    <h1>{{ page_title }}</h1>
+    <h2>{{ employee.name }}</h2>
+    <p>Должность: {{ employee.role }}</p>
+    {% if head %}
+        <p>Начальник: <a href="{% url 'employee_catalog:show_employee_full' head.pk %}">
+            {{ head.name }}
+        </a>
+        </p>
+    {% else %}
+        <p>Начальник: отсутсвует</p>
+    {% endif %}
+    <br>
+    <h2>Прямые подчинённые:</h2>
+    {% for member in team %}
+    <a href="/employee_full/{{ member.pk }}">
+        {{ member.name }}
+    </a><br>
+    {% endfor %}
+    <p>© {{ current_year }}</p>
+
+</body>
+</html>

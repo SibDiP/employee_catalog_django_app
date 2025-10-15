@@ -1,10 +1,15 @@
 from django.urls import path
-from .views import employee_tree, specific_employee_tree
+from .views import (employee_tree, specific_employee_tree, simple,show_employee, 
+show_employee_full)
 
 app_name = 'employee_catalog'
 urlpatterns = [
     path('', employee_tree, name='employee_tree'),
-    path('<int:pk>/', specific_employee_tree, name='specific_employee_tree')
+    path('<int:pk>/', specific_employee_tree, name='specific_employee_tree'),
+    # Учебные пути
+    path('simple/', simple, name='simple'),
+    path('show_employee/<int:pk>', show_employee, name='show_employee'),
+    path('employee_full/<int:pk>', show_employee_full, name='show_employee_full')
 ]
 
 
