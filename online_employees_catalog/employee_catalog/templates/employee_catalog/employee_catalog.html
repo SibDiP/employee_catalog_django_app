@@ -1,0 +1,21 @@
+{% extends 'employee_catalog/base.html' %}
+
+{% block content %}
+    
+    <h1>{{ page_title }}</h1>
+    <p>Всего сотрудников: {{ total_employees }}</p>
+
+
+    {# Список сотрудников #}
+    <div class="employee_list">
+        {% for employee in page_obj %}
+            <div class="employee_item" style="margin-left: {{ employee.depth|add:0 }}rem;">
+                {{ employee }}
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Блок навигации #}
+    {% include 'employee_catalog/_pagination.html' %}
+    
+{% endblock content %}

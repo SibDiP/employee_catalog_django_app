@@ -1,0 +1,48 @@
+{% if page_obj.has_other_pages %}
+<nav class="pagination">
+    <ul class="pagination-list">
+        {# "Первая" #}
+        {% if page_obj.has_previous %}
+            <li>
+                <a href="?page=1" aria-label="Первая страница">
+                    &laquo; Первая </i>
+                </a>
+            </li>
+        {% endif %}
+
+        {# "Предыдущая" #}
+        {% if page_obj.has_previous %}
+            <li>
+                <a href="?page={{ page_obj.previous_page_number }}">
+                    &lsaquo; Пред.
+                </a>
+            </li>
+        {% endif %}
+
+        {# Текущая страница  #}
+        <li class="current">
+            <span>
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {# "Следующая" #}
+        {% if page_obj.has_next %}
+            <li>
+                <a href="?page={{ page_obj.next_page_number }}">
+                    След. &rsaquo;
+                </a>
+            </li>
+        {% endif %}
+
+        {# Кнопка "Последняя" #}
+        {% if page_obj.has_next %}
+            <li>
+                <a href="?page={{ page_obj.paginator.num_pages }}">
+                    Последняя &raquo;
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
