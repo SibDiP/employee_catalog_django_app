@@ -1,48 +1,42 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'employee_catalog/css/_pagination.css' %}">
+
 {% if page_obj.has_other_pages %}
-<nav class="pagination">
-    <ul class="pagination-list">
-        {# "Первая" #}
-        {% if page_obj.has_previous %}
-            <li>
-                <a href="?page=1" aria-label="Первая страница">
-                    &laquo; Первая </i>
-                </a>
-            </li>
-        {% endif %}
-
-        {# "Предыдущая" #}
-        {% if page_obj.has_previous %}
-            <li>
-                <a href="?page={{ page_obj.previous_page_number }}">
-                    &lsaquo; Пред.
-                </a>
-            </li>
-        {% endif %}
-
-        {# Текущая страница  #}
-        <li class="current">
-            <span>
+    <nav class="pagination" aria-label="Навигация по страницам">
+        <div class="pagination-buttons">
+            
+            {# --- Кнопка "Первая" или недоступная --- #}
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="btn btn-page" aria-label="Первая страница">&laquo; Первая</a>
+            {% else %}
+                <span class="btn btn-disabled" aria-disabled="true">&laquo; Первая</span>
+            {% endif %}
+            
+            {# --- Кнопка "Предыдущая" или недоступная --- #}
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-page" aria-label="Предыдущая страница">&lsaquo; Пред.</a>
+            {% else %}
+                <span class="btn btn-disabled" aria-disabled="true">&lsaquo; Пред.</span>
+            {% endif %}
+            
+            {# --- Текущая страница --- #}
+            <span class="btn btn-current" aria-current="page">
                 Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
             </span>
-        </li>
-
-        {# "Следующая" #}
-        {% if page_obj.has_next %}
-            <li>
-                <a href="?page={{ page_obj.next_page_number }}">
-                    След. &rsaquo;
-                </a>
-            </li>
-        {% endif %}
-
-        {# Кнопка "Последняя" #}
-        {% if page_obj.has_next %}
-            <li>
-                <a href="?page={{ page_obj.paginator.num_pages }}">
-                    Последняя &raquo;
-                </a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+            
+            {# --- Кнопка "Следующая" или недоступная --- #}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-page" aria-label="Следующая страница">След. &rsaquo;</a>
+            {% else %}
+                <span class="btn btn-disabled" aria-disabled="true">След. &rsaquo;</span>
+            {% endif %}
+            
+            {# --- Кнопка "Последняя" или недоступная --- #}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-page" aria-label="Последняя страница">Последняя &raquo;</a>
+            {% else %}
+                <span class="btn btn-disabled" aria-disabled="true">Последняя &raquo;</span>
+            {% endif %}
+        </div>
+    </nav>
 {% endif %}

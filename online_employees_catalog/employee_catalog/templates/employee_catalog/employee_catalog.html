@@ -3,11 +3,13 @@
 {% block content %}
     
     <h1>{{ page_title }}</h1>
-    <p>Всего сотрудников: {{ total_employees }}</p>
-
+    <span>Всего сотрудников: {{ total_employees }}</span>
+    
+    {# Блок навигации #}
+    {% include 'employee_catalog/_pagination.html' %}
 
     {# Список сотрудников #}
-    <div class="employee_list">
+    <div class="employee_list" style="margin: 1rem;">
         {% for employee in page_obj %}
             <div class="employee_item" style="margin-left: {{ employee.depth|add:0 }}rem;">
                 {{ employee }}
@@ -15,7 +17,6 @@
         {% endfor %}
     </div>
 
-    {# Блок навигации #}
-    {% include 'employee_catalog/_pagination.html' %}
+
     
 {% endblock content %}
