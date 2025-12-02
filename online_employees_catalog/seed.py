@@ -4,13 +4,10 @@ Run from shell
 # TODO add a first employee creation logic
 from decouple import config
 import os
-
 # Читаем из .env имя модуля настроек
 settings_module = config('DJANGO_SETTINGS_MODULE', default='online_employees_catalog.settings')
-
 # прокидываем в настоящие переменные окружения, что б джанго его увидал
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
-
 # Теперь django.setup() увидит нужные настройки
 import django
 django.setup()
@@ -19,6 +16,7 @@ from employee_catalog.models import Employee
 import random
 from names_generator import generate_name
 from datetime import datetime, timedelta
+
 
 # This three constants can be changed as needed
 SEED_EMPLOYEE_AMOUNT = 50
@@ -64,37 +62,34 @@ SALARY_RANGES: dict[int, tuple[int, int]] = {
     4: (30_000, 70_000),    # Developer/QA
 }
 
-seed_iteration_remainder_amount = SEED_EMPLOYEE_AMOUNT % SEED_EMPLOYEE_PER_CHIEF_AMOUNT
+iteration_amount = EMPLOYEE_AMOUNT // EMPLOYEES_PER_CHIEF_AMOUNT
+iteration_remainder_amount = EMPLOYEE_AMOUNT % EMPLOYEES_PER_CHIEF_AMOUNT
 today = datetime.now()
 
 
 def custom_chief_provider(max_hierarchy_lvl) -> object:
     """
-    :return: random employee with hierarchy_lvl less than 5
+    :return: Возвращает случайного руководителя с глубиной меньше max_hierarchy_lvl
     """
     employees = Employee.objects.filter(depth__lt=max_hierarchy_lvl)
+    # Вместо полностью случайного выбора
+    employees = Employee.objects.filter(
+        depth__lt=max_hierarchy_lvl,
+        numchild__lt=EMPLOYEES_PER_CHIEF_AMOUNT  # Не даём начальнику >  X подчинённых
+    )
+
 
     if employees.exists():
         return random.choice(employees)
     else:
         root = Employee.add_root(name=generate_name(style='capital'),
-                           employment_date=datetime.now() - timedelta(days=random.randint(1, 365 * 5)),
-                           role=f"Chief",
-                           salary=round(random.random() * 10000))
+                           employment_date = today - timedelta(days=random.randint(1, 365 * 5)),
+                           role = {generator_employee_role(0)},
+                           salary = generate_salary(0),
+                           )
         return root
 
 
-def employee_create(employee_per_chief: int, max_hierarchy_lvl: int) -> None:
-    chief = custom_chief_provider(max_hierarchy_lvl)
-    employee_hierarchy_lvl = chief.depth + 1
-
-    for _ in range(employee_per_chief):
-        employee = Employee.add_child(chief, name=generate_name(style='capital'),
-                                      employment_date=datetime.now() - timedelta(days=random.randint(1, 365 * 5)),
-                                      role=f"Employee lvl {employee_hierarchy_lvl}",
-                                      salary=round(random.random() * 1000))
-
-    print(f'{employee_per_chief} employees added to {chief}')
 def generator_employee_role(depth_lvl: int) -> str:
     """Возвращает случайную должность из списка на основе depth"""
     role = EMPLOYEE_ROLES.get(depth_lvl, ('Employee',))
@@ -110,4 +105,37 @@ def generate_salary(depth: int) -> int:
     min_sal, max_sal = SALARY_RANGES.get(depth, (30_000, 50_000))
     return random.randint(min_sal, max_sal)
 
-employee_create(seed_iteration_remainder_amount, SEED_HIERARCHY_LVL_MAX_DEEP)
+def employee_create(employee_per_chief: int, max_hierarchy_lvl: int) -> None:
+    """Генерирует лист сотрудников и добавляет chef-у за один вызов add_children."""
+    if not employee_per_chief:
+        return
+    
+    chief = custom_chief_provider(max_hierarchy_lvl)
+    employee_hierarchy_lvl = chief.depth + 1
+    now = datetime.now()
+
+    employees_data = [
+        {
+            'name': generate_name(style='capital'),
+            'employment_date': now - timedelta(days=random.randint(1, 365 * 5)),
+            'role': f"{generator_employee_role(employee_hierarchy_lvl)}",
+            'salary': generate_salary(employee_hierarchy_lvl),
+
+        }
+        for _ in range(employee_per_chief)
+    ]
+    with transaction.atomic(): # делает одним INSERT. 
+        for employee in employees_data:
+            chief.add_child(
+                name=employee['name'],
+                employment_date=employee['employment_date'],
+                role=employee['role'],
+                salary=employee['salary']
+                )
+    print(f'{employee_per_chief} подчинённых добавлено к {chief.name} уровень {chief.depth}')
+
+for i in range(iteration_amount):
+    employee_create(EMPLOYEES_PER_CHIEF_AMOUNT, HIERARCHY_LVL_MAX_DEEP)
+
+if iteration_remainder_amount:
+    employee_create(iteration_remainder_amount, HIERARCHY_LVL_MAX_DEEP)
