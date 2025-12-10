@@ -69,17 +69,13 @@ today = datetime.now()
 
 
 def custom_chief_provider(max_hierarchy_lvl) -> object:
-    """
-    :return: Возвращает случайного руководителя с глубиной меньше max_hierarchy_lvl
-    """
+    """Возвращает случайного руководителя с глубиной меньше max_hierarchy_lvl."""
     employees = Employee.objects.filter(depth__lt=max_hierarchy_lvl)
     # Вместо полностью случайного выбора
     employees = Employee.objects.filter(
         depth__lt=max_hierarchy_lvl,
         numchild__lt=EMPLOYEE_PER_CHIEF_AMOUNT  # Не даём начальнику >  X подчинённых
     )
-
-
     if employees.exists():
         return random.choice(employees)
     else:
@@ -90,18 +86,16 @@ def custom_chief_provider(max_hierarchy_lvl) -> object:
                            )
         return root
 
-
 def generator_employee_role(depth_lvl: int) -> str:
-    """Возвращает случайную должность из списка на основе depth"""
+    """Возвращает случайную должность из списка на основе depth."""
     role = EMPLOYEE_ROLES.get(depth_lvl, ('Employee',))
     return random.choice(role)
 
 def generate_salary(depth: int) -> int:
-    """
-    Генерирует адекватную зарплату на основе уровня иерархии.
+    """Генерирует адекватную зарплату на основе уровня иерархии.
 
     Returns:
-        Зарплата в виде целого числа
+        int: Зарплата в виде целого числа.
     """
     min_sal, max_sal = SALARY_RANGES.get(depth, (30_000, 50_000))
     return random.randint(min_sal, max_sal)
