@@ -18,11 +18,12 @@ from names_generator import generate_name
 from datetime import datetime, timedelta
 
 
-# This three constants can be changed as needed
-SEED_EMPLOYEE_AMOUNT = 50
-SEED_EMPLOYEE_PER_CHIEF_AMOUNT = 5
-SEED_HIERARCHY_LVL_MAX_DEEP = 5
+# Константы можно менять по желанию
+EMPLOYEE_AMOUNT = 50
+EMPLOYEE_PER_CHIEF_AMOUNT = 5
+HIERARCHY_LVL_MAX_DEEP = 5
 EMPLOYEE_ROLES: dict[int, tuple[str]] = {
+    # Сгенерированно ИИ
     # C-level executives
     0: ('CEO', 'President'),
 
@@ -43,7 +44,7 @@ EMPLOYEE_ROLES: dict[int, tuple[str]] = {
     # Senior Individual Contributors
     3: (
         'Senior Developer', 'Senior QA Engineer', 'Senior Designer',
-        'Data Analyst', 'Security Engineer', 'DevOps Engineer',
+        'Security Engineer', 'DevOps Engineer',
         'Solutions Architect', 'Senior Product Designer',
     ),
     
@@ -62,8 +63,8 @@ SALARY_RANGES: dict[int, tuple[int, int]] = {
     4: (30_000, 70_000),    # Developer/QA
 }
 
-iteration_amount = EMPLOYEE_AMOUNT // EMPLOYEES_PER_CHIEF_AMOUNT
-iteration_remainder_amount = EMPLOYEE_AMOUNT % EMPLOYEES_PER_CHIEF_AMOUNT
+iteration_amount = EMPLOYEE_AMOUNT // EMPLOYEE_PER_CHIEF_AMOUNT
+iteration_remainder_amount = EMPLOYEE_AMOUNT % EMPLOYEE_PER_CHIEF_AMOUNT
 today = datetime.now()
 
 
@@ -75,7 +76,7 @@ def custom_chief_provider(max_hierarchy_lvl) -> object:
     # Вместо полностью случайного выбора
     employees = Employee.objects.filter(
         depth__lt=max_hierarchy_lvl,
-        numchild__lt=EMPLOYEES_PER_CHIEF_AMOUNT  # Не даём начальнику >  X подчинённых
+        numchild__lt=EMPLOYEE_PER_CHIEF_AMOUNT  # Не даём начальнику >  X подчинённых
     )
 
 
@@ -135,7 +136,7 @@ def employee_create(employee_per_chief: int, max_hierarchy_lvl: int) -> None:
     print(f'{employee_per_chief} подчинённых добавлено к {chief.name} уровень {chief.depth}')
 
 for i in range(iteration_amount):
-    employee_create(EMPLOYEES_PER_CHIEF_AMOUNT, HIERARCHY_LVL_MAX_DEEP)
+    employee_create(EMPLOYEE_PER_CHIEF_AMOUNT, HIERARCHY_LVL_MAX_DEEP)
 
 if iteration_remainder_amount:
     employee_create(iteration_remainder_amount, HIERARCHY_LVL_MAX_DEEP)
