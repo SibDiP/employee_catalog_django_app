@@ -47,10 +47,10 @@ class Employee(MP_Node):
     def __str__(self):
         return f'{self.role} | {self.name} | уровень иерархии {self.depth}'
     
-    @property
-    def hierarchy_lvl(self):
-        """
-        Человекопонятное представление глубины иерархии.
-        """
-        return self.depth + 1
+    # @property
+    # def hierarchy_lvl(self):
+    #     """
+    #     Человекопонятное представление глубины иерархии.
+    #     """
+    #     return self.depth
         

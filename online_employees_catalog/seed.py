@@ -1,7 +1,7 @@
 """Fulfill DB with fake employees
 Run from shell
 """
-# TODO add a first employee creation logic
+
 from decouple import config
 import os
 # Читаем из .env имя модуля настроек
@@ -19,9 +19,10 @@ from datetime import datetime, timedelta
 
 
 # Константы можно менять по желанию
-EMPLOYEE_AMOUNT = 50
-EMPLOYEE_PER_CHIEF_AMOUNT = 5
+EMPLOYEE_AMOUNT = 50_000
+EMPLOYEE_PER_BATCH  = 5
 HIERARCHY_LVL_MAX_DEEP = 5
+
 EMPLOYEE_ROLES: dict[int, tuple[str]] = {
     # Сгенерированно ИИ
     # C-level executives
@@ -63,28 +64,14 @@ SALARY_RANGES: dict[int, tuple[int, int]] = {
     4: (30_000, 70_000),    # Developer/QA
 }
 
-iteration_amount = EMPLOYEE_AMOUNT // EMPLOYEE_PER_CHIEF_AMOUNT
-iteration_remainder_amount = EMPLOYEE_AMOUNT % EMPLOYEE_PER_CHIEF_AMOUNT
+
+iteration_amount = EMPLOYEE_AMOUNT // EMPLOYEE_PER_BATCH
+iteration_remainder_amount = EMPLOYEE_AMOUNT % EMPLOYEE_PER_BATCH
+
 today = datetime.now()
 
-
-def custom_chief_provider(max_hierarchy_lvl) -> object:
-    """Возвращает случайного руководителя с глубиной меньше max_hierarchy_lvl."""
-    employees = Employee.objects.filter(depth__lt=max_hierarchy_lvl)
-    # Вместо полностью случайного выбора
-    employees = Employee.objects.filter(
-        depth__lt=max_hierarchy_lvl,
-        numchild__lt=EMPLOYEE_PER_CHIEF_AMOUNT  # Не даём начальнику >  X подчинённых
-    )
-    if employees.exists():
-        return random.choice(employees)
-    else:
-        root = Employee.add_root(name=generate_name(style='capital'),
-                           employment_date = today - timedelta(days=random.randint(1, 365 * 5)),
-                           role = {generator_employee_role(0)},
-                           salary = generate_salary(0),
-                           )
-        return root
+######################################################################
+# Tools
 
 def generator_employee_role(depth_lvl: int) -> str:
     """Возвращает случайную должность из списка на основе depth."""
@@ -100,37 +87,116 @@ def generate_salary(depth: int) -> int:
     min_sal, max_sal = SALARY_RANGES.get(depth, (30_000, 50_000))
     return random.randint(min_sal, max_sal)
 
-def employee_create(employee_per_chief: int, max_hierarchy_lvl: int) -> None:
-    """Генерирует лист сотрудников и добавляет chef-у за один вызов add_children."""
-    if not employee_per_chief:
-        return
+
+######################################################################
+# Main func
+
+def create_CEO() -> Employee:
+    """Создаёт корневую ноду в Employee"""
+    ceo = Employee.objects.filter(depth=1).first()
+    if ceo is None:
+        ceo = Employee.add_root(name=generate_name(style='capital'),
+                            employment_date = today - timedelta(days=random.randint(1, 365 * 5)),
+                            role = generator_employee_role(0),
+                            salary = generate_salary(0),
+                            )
+        print("CEO создан")
+    return ceo
+
+def get_random_chief_list(max_depth: int, amount: int) -> list[Employee]:
+    """Получить лист случайных Employee в БД с depth HIERARCHY_LVL_MAX_DEEP - 1 (т.к. нижний
+    уровень не может быть руководителелем).
+
+    Args:
+        max_depth (int): Максимальная глубина запроса.
+        amount(int): количество записей.
+
+    Raises:
+        TypeError: необходимо задать max_depth
+        TypeError: необходимо задать amount
+
+    Returns:
+        lsit[Employee]: Список Employeeв бд с depth == max_depth-1
+        
+    """
+
+    if max_depth == None:
+        raise TypeError("Необходим max_depth") 
+    if amount == None:
+        raise TypeError("Необходим amount")
     
-    chief = custom_chief_provider(max_hierarchy_lvl)
-    employee_hierarchy_lvl = chief.depth + 1
+    chifs_depth = max_depth - 1
+    all_chief_list = Employee.objects.filter(depth__lte=chifs_depth)
+    chosen_chiefs = random.choices(all_chief_list, k=amount,)
+
+    return chosen_chiefs
+        
+def create_employees_data(
+        chief_list: list[Employee], max_depth: int
+        ) -> list[dict]:
+    """Генерирует данные сотрудника.
+
+    Args:
+        max_depth (int): Максимальная глубина в иерархии.
+
+    Returns:
+        dict: Словарь с данными Employee для вставки в БД.
+    """
+
     now = datetime.now()
+    chief = random.choice(chief_list)
+    employee_hierarchy_lvl = chief.depth + 1
 
     employees_data = [
         {
+            'chief': chief,
             'name': generate_name(style='capital'),
             'employment_date': now - timedelta(days=random.randint(1, 365 * 5)),
             'role': f"{generator_employee_role(employee_hierarchy_lvl)}",
             'salary': generate_salary(employee_hierarchy_lvl),
-
         }
-        for _ in range(employee_per_chief)
+        for _ in (chief_list)
     ]
+    return employees_data
+
+def insert_employees_data(employees_data: list[dict]):
+    """Вставляет Employee в БД.add()
+     
+    Используется один INSERT с помощью transaction.atomic().
+
+    transaction.atomic() используется в основном для ускорения генерации на HDD.
+
+    Args:
+        employees_data (list[dict]): лист со словарями. Один словарь - один Employee.
+    """
     with transaction.atomic(): # делает одним INSERT. 
         for employee in employees_data:
-            chief.add_child(
+            employee['chief'].add_child(
                 name=employee['name'],
                 employment_date=employee['employment_date'],
                 role=employee['role'],
                 salary=employee['salary']
                 )
-    print(f'{employee_per_chief} подчинённых добавлено к {chief.name} уровень {chief.depth}')
 
-for i in range(iteration_amount):
-    employee_create(EMPLOYEE_PER_CHIEF_AMOUNT, HIERARCHY_LVL_MAX_DEEP)
+if __name__ == "__main__":
+    current_iteration = 1
+    total_iteration = iteration_amount
+    if iteration_remainder_amount > 0:
+        total_iteration += 1
+    
+    print(f"Генеририруем {EMPLOYEE_AMOUNT} записей сотрудников")
+    create_CEO()
 
-if iteration_remainder_amount:
-    employee_create(iteration_remainder_amount, HIERARCHY_LVL_MAX_DEEP)
+    for batch in range(iteration_amount):
+        chief_list = get_random_chief_list(HIERARCHY_LVL_MAX_DEEP, EMPLOYEE_PER_BATCH)
+        employees_data = create_employees_data(chief_list, HIERARCHY_LVL_MAX_DEEP)
+        insert_employees_data(employees_data)
+        print(f"Добавлено {EMPLOYEE_PER_BATCH} сотрудников! | {current_iteration}/{total_iteration}")
+        current_iteration += 1
+
+
+    if iteration_remainder_amount > 0:
+        chief_list = get_random_chief_list(HIERARCHY_LVL_MAX_DEEP, iteration_remainder_amount)
+        employees_data = create_employees_data(chief_list, HIERARCHY_LVL_MAX_DEEP)
+        insert_employees_data(employees_data)
+        print(f"Добавлено {iteration_remainder_amount} сотрудников! | {current_iteration}/{total_iteration}")
