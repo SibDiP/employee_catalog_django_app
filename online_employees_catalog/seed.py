@@ -184,6 +184,10 @@ if __name__ == "__main__":
     parser.add_argument("--amount", type=int, default=EMPLOYEE_AMOUNT)
     parser.add_argument("--batch-size", type=int, default=EMPLOYEE_PER_BATCH)
     parser.add_argument("--max-depth", type=int, default=HIERARCHY_LVL_MAX_DEEP)
+    # TODO - seed для возможности проверки работы
+    #parser.add_argument("--seed", type=int, default=None)
+    # TOD - повторный запуск / удаление записей
+
 
     args = parser.parse_args()
 
