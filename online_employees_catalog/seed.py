@@ -12,6 +12,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
 import django
 django.setup()
 from django.db import transaction
+import argparse
+
 from employee_catalog.models import Employee
 import random
 from names_generator import generate_name
@@ -65,9 +67,6 @@ SALARY_RANGES: dict[int, tuple[int, int]] = {
 }
 
 
-iteration_amount = EMPLOYEE_AMOUNT // EMPLOYEE_PER_BATCH
-iteration_remainder_amount = EMPLOYEE_AMOUNT % EMPLOYEE_PER_BATCH
-
 today = datetime.now()
 
 ######################################################################
@@ -95,7 +94,8 @@ def create_CEO() -> Employee:
     """Создаёт корневую ноду в Employee"""
     ceo = Employee.objects.filter(depth=1).first()
     if ceo is None:
-        ceo = Employee.add_root(name=generate_name(style='capital'),
+        ceo = Employee.add_root(
+                            name=generate_name(style='capital'),
                             employment_date = today - timedelta(days=random.randint(1, 365 * 5)),
                             role = generator_employee_role(0),
                             salary = generate_salary(0),
@@ -179,24 +179,35 @@ def insert_employees_data(employees_data: list[dict]):
                 )
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--amount", type=int, default=EMPLOYEE_AMOUNT)
+    parser.add_argument("--batch-size", type=int, default=EMPLOYEE_PER_BATCH)
+    parser.add_argument("--max-depth", type=int, default=HIERARCHY_LVL_MAX_DEEP)
+
+    args = parser.parse_args()
+
+    iteration_amount = args.amount // args.batch_size
+    iteration_remainder_amount = args.amount % args.batch_size
+
     current_iteration = 1
     total_iteration = iteration_amount
     if iteration_remainder_amount > 0:
         total_iteration += 1
     
-    print(f"Генеририруем {EMPLOYEE_AMOUNT} записей сотрудников")
+    print(f"Генеририруем {args.amount} записей сотрудников")
     create_CEO()
 
     for batch in range(iteration_amount):
-        chief_list = get_random_chief_list(HIERARCHY_LVL_MAX_DEEP, EMPLOYEE_PER_BATCH)
-        employees_data = create_employees_data(chief_list, HIERARCHY_LVL_MAX_DEEP)
+        chief_list = get_random_chief_list(args.max_depth, args.batch_size)
+        employees_data = create_employees_data(chief_list, args.max_depth)
         insert_employees_data(employees_data)
-        print(f"Добавлено {EMPLOYEE_PER_BATCH} сотрудников! | {current_iteration}/{total_iteration}")
+        print(f"Добавлено {args.batch_size} сотрудников! | {current_iteration}/{total_iteration}")
         current_iteration += 1
 
 
     if iteration_remainder_amount > 0:
-        chief_list = get_random_chief_list(HIERARCHY_LVL_MAX_DEEP, iteration_remainder_amount)
-        employees_data = create_employees_data(chief_list, HIERARCHY_LVL_MAX_DEEP)
+        chief_list = get_random_chief_list(args.max_depth, iteration_remainder_amount)
+        employees_data = create_employees_data(chief_list, args.max_depth)
         insert_employees_data(employees_data)
         print(f"Добавлено {iteration_remainder_amount} сотрудников! | {current_iteration}/{total_iteration}")
