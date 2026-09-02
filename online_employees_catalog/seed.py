@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 
 # Константы можно менять по желанию
 EMPLOYEE_AMOUNT = 50_000
-EMPLOYEE_PER_BATCH  = 5
+EMPLOYEE_PER_BATCH  = 10
 HIERARCHY_LVL_MAX_DEEP = 5
 
 EMPLOYEE_ROLES: dict[int, tuple[str]] = {
