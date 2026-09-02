@@ -77,7 +77,7 @@ class Settings:
         
         if self.USE_SQLITE:
             # SQLite: файловая БД, ассинхронный драйвер aiosqlite
-            db_path = BASE_DIR / 'db.sqlite3'
+            db_path = BASE_DIR / 'online_employees_catalog' / 'db.sqlite3'
             return f"sqlite+aiosqlite:///{db_path}"
         
         else:
