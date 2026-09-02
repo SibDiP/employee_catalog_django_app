@@ -54,7 +54,7 @@ def specific_employee_tree(request, **kwargs):
 #     })    
 
 
-def employee_catalog_with_pagination(request, records_on_page: int = 50):
+def employee_catalog_with_pagination(request, records_on_page: int = 50, employee_id = None):
     """
     Возвращает отрисованный шаблон 'employee_catalog/company_tree.html' с 
     разбивкой на страницы. Пагинатор снимает нагрузку при больших объёмах
@@ -70,9 +70,16 @@ def employee_catalog_with_pagination(request, records_on_page: int = 50):
         - page_title: заголовок страницы,
         - total_employees: общее количество сотрудников.
     """
+
     PAGE_BY_DEFAULT = 1
 
-    all_nodes = Employee.get_tree()
+    if employee_id is None:
+        all_nodes = Employee.get_tree()
+    else:
+        node = get_object_or_404(Employee, pk=employee_id)
+        node_qs = Employee.objects.filter(pk=employee_id)
+        all_nodes = node_qs | node.get_descendants()
+
     paginator = Paginator(all_nodes, records_on_page)
     page_number = request.GET.get('page', PAGE_BY_DEFAULT)
     page_obj = paginator.get_page(page_number)

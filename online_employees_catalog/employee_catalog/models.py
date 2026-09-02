@@ -8,7 +8,7 @@ class Employee(MP_Node):
     
     MP_Node (Materialized Path Node) автоматически добавляет поля:
     - path: CharField(max_length=255) - полный путь от корня, вид:'00010002'
-    - depth: PositiveIntegerField - глубина в дереве (0 = корень)
+    - depth: PositiveIntegerField - глубина в дереве (1 = корень)
     - numchild: PositiveIntegerField - количество прямых потомков
 
     Полезные методы для работы с деревом:

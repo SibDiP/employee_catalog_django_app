@@ -6,7 +6,8 @@ app_name = 'employee_catalog'
 urlpatterns = [
     #path('', company_tree, name='company_tree'),
     #path('<int:pk>/', specific_employee_tree, name='specific_employee_tree'),
-    path('employee_catalog/', employee_catalog_with_pagination, name='employee_catalog_with_pagination'),
+    path('', employee_catalog_with_pagination, name='employee_catalog_with_pagination'),
+    path('<int:employee_id>', employee_catalog_with_pagination, name='employee_catalog_with_pagination'),
     # Учебные пути
     path('simple/', simple, name='simple'),
     path('show_employee/<int:pk>', show_employee, name='show_employee'),
