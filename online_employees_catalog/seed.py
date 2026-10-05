@@ -25,7 +25,7 @@ EMPLOYEE_AMOUNT = 50_000
 EMPLOYEE_PER_BATCH  = 10
 HIERARCHY_LVL_MAX_DEEP = 5
 
-EMPLOYEE_ROLES: dict[int, tuple[str]] = {
+EMPLOYEE_ROLES: dict[int, tuple[str, ...]] = {
     # Сгенерированно ИИ
     # C-level executives
     0: ('CEO', 'President'),
@@ -116,7 +116,7 @@ def get_random_chief_list(max_depth: int, amount: int) -> list[Employee]:
         TypeError: необходимо задать amount
 
     Returns:
-        lsit[Employee]: Список Employeeв бд с depth == max_depth-1
+        list[Employee]: Список Employee в бд с depth == max_depth-1
         
     """
 
@@ -125,19 +125,19 @@ def get_random_chief_list(max_depth: int, amount: int) -> list[Employee]:
     if amount == None:
         raise TypeError("Необходим amount")
     
-    chifs_depth = max_depth - 1
-    all_chief_list = Employee.objects.filter(depth__lte=chifs_depth)
+    chiefs_depth = max_depth - 1
+    all_chief_list = Employee.objects.filter(depth__lte=chiefs_depth)
     chosen_chiefs = random.choices(all_chief_list, k=amount,)
 
     return chosen_chiefs
         
 def create_employees_data(
-        chief_list: list[Employee], max_depth: int
+        chief_list: list[Employee],
         ) -> list[dict]:
     """Генерирует данные сотрудника.
 
     Args:
-        max_depth (int): Максимальная глубина в иерархии.
+        chief_list: список потенциальных начальников.
 
     Returns:
         dict: Словарь с данными Employee для вставки в БД.
@@ -204,7 +204,7 @@ if __name__ == "__main__":
 
     for batch in range(iteration_amount):
         chief_list = get_random_chief_list(args.max_depth, args.batch_size)
-        employees_data = create_employees_data(chief_list, args.max_depth)
+        employees_data = create_employees_data(chief_list)
         insert_employees_data(employees_data)
         print(f"Добавлено {args.batch_size} сотрудников! | {current_iteration}/{total_iteration}")
         current_iteration += 1
@@ -212,6 +212,6 @@ if __name__ == "__main__":
 
     if iteration_remainder_amount > 0:
         chief_list = get_random_chief_list(args.max_depth, iteration_remainder_amount)
-        employees_data = create_employees_data(chief_list, args.max_depth)
+        employees_data = create_employees_data(chief_list)
         insert_employees_data(employees_data)
         print(f"Добавлено {iteration_remainder_amount} сотрудников! | {current_iteration}/{total_iteration}")
