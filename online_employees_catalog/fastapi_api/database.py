@@ -25,8 +25,7 @@ engine = create_async_engine(
     # приложение упадет с ошибкой при попытке параллельного обращения двух разных 
     # пользователей. Этот флаг отключает проверку потоков, перекладывая контроль 
     # конкурентности на драйвер aiosqlite.
-    connect_args=({"check_same_thread": False} 
-                  if settings.USE_SQLITE 
+    connect_args=({"check_same_thread": False} if settings.USE_SQLITE 
                   else {}
                   )
 )
