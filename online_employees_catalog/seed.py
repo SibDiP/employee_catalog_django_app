@@ -137,7 +137,7 @@ def create_employees_data(
     """Генерирует данные сотрудника.
 
     Args:
-        chief_list: список потенциальных начальников.
+        list[Employee]: список потенциальных начальников.
 
     Returns:
         dict: Словарь с данными Employee для вставки в БД.

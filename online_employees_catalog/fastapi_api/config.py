@@ -51,14 +51,14 @@ class Settings:
         
         ## Особенности:
         * Поддержка иерархической структуры (MP_Node из django-treebeard)
-        * Пагинация для работы с 50k+ записей
+        * Пагинация
         * Автоматическая документация (Swagger UI)
         
         ## Эндпоинты:
-        * `/api/employees` - список сотрудников с пагинацией
-        * `/api/employees/{id}` - профиль сотрудника
-        * `/api/employees/{id}/subtree` - поддерево сотрудника
-        * `/api/employees/tree/roots` - корневые узлы
+        * `/api/v1/employees` - список сотрудников с пагинацией
+        * `/api/v1/employees/{id}` - профиль сотрудника
+        * `/api/v1/employees/{id}/subtree` - поддерево сотрудника
+        * `/api/v1/employees/tree/roots` - корневые узлы
         """
 
         # Настройки пагинации
@@ -76,7 +76,7 @@ class Settings:
     def DATABASE_URL(self) -> str:
         
         if self.USE_SQLITE:
-            # SQLite: файловая БД, ассинхронный драйвер aiosqlite
+            # SQLite: файловая БД, асинхронный драйвер aiosqlite
             db_path = BASE_DIR / 'online_employees_catalog' / 'db.sqlite3'
             return f"sqlite+aiosqlite:///{db_path}"
         
