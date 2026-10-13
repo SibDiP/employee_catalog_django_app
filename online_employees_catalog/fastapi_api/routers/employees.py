@@ -10,7 +10,7 @@ from ..schemas import (
     TreeNode,
 )
 
-router = APIRouter(prefix="/employees", tags=["employees"])
+router = APIRouter(prefix="/v1/employees", tags=["employees"])
 
 
 @router.get("", response_model=PaginatedEmployeeResponse)
