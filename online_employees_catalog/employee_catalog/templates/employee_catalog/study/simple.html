@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One employee</title>
+</head>
+<body>
+   <h1>{{ employee.name }}</h1>
+   <p>Должнотсь: {{ employee.role  }}</p>
+   <p>Зарплата: {{ employee.salary }}</p>
+   <p>Ссылка: {% url 'employee_catalog:specific_employee_tree' pk=1 %}"
+</body>
+</html>

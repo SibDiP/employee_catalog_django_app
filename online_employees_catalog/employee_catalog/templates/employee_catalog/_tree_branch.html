@@ -1,0 +1,14 @@
+<li style="margin-left: {{ branch.node.depth|add:0 }}rem;">
+    {{ branch.node }}
+    {% if branch.children %}
+    
+        <ul>
+        {% for child_branch in branch.children %}
+        
+            {% include 'employee_catalog/_tree_branch.html' with branch=child_branch %}
+        
+        {% endfor %}
+        </ul>
+    
+    {% endif %}
+</li>

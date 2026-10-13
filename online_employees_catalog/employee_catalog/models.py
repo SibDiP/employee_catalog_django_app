@@ -1,32 +1,49 @@
 from django.db import models
-from django.db.models.signals import post_save, pre_save
-from django.core.exceptions import ValidationError
+from treebeard.mp_tree import MP_Node
+from django.core.validators import MinValueValidator
 
+class Employee(MP_Node):
+    """
+    Модель сотрудника с иерархической структурой
+    
+    MP_Node (Materialized Path Node) автоматически добавляет поля:
+    - path: CharField(max_length=255) - полный путь от корня, вид:'00010002'
+    - depth: PositiveIntegerField - глубина в дереве (1 = корень)
+    - numchild: PositiveIntegerField - количество прямых потомков
 
-class Employee(models.Model):
-    """Model for employees information"""
+    Полезные методы для работы с деревом:
+    add_root(): создать корень.
+    add_child(): добавить прямого потомка.
+    get_ancestors() / get_parent(): навигация вверх по дереву.
+    get_descendants() / get_children(): навигация вниз.
+    get_siblings(): получить «братьев» на том же уровне.
+    move(): переместить узел внутри дерева.
+
+    """
+
     name = models.CharField('Имя', max_length=255)
     role = models.CharField('Должность', max_length=255)
-    # TODO add positive salary validator
-    salary = models.FloatField('Заработная плата')
     employment_date = models.DateField('Дата приёма на работу')
-    chief = models.ForeignKey('self', on_delete=models.SET_NULL, verbose_name='Начальник', null=True, blank=True,
-                              limit_choices_to={'hierarchy_lvl_counter__lt': 5}
-                              )
+    salary = models.DecimalField(
+        'Заработная плата',
+        max_digits=10,
+        decimal_places=2,
+        validators=[
+            MinValueValidator(
+                0.00, message='Зарплата не может быть отрицательной')
+        ])
+    
+    # Атрибут MP_Node. Порядок детей с начала по role, затем по name
+    node_order_by = ['role', 'name']
 
-    hierarchy_lvl_counter = models.PositiveSmallIntegerField('Уровень иерархии', null=True, blank=True, )
+    class Meta:
+        """
+        Класс с мета информацией Django (в БД не идёт)
+        """
+        # Отображение в админке
+        verbose_name = 'Сотрудник'
+        verbose_name_plural = 'Сотрудники'
 
     def __str__(self):
-        return f'{self.name}, lvl-{self.hierarchy_lvl_counter}'
-
-
-def employee_post_save_chief_and_hierarchy_update(sender, instance, *args, **kwargs):
-    """Make an employee chief for himself if None is chosen when create and give a hierarchy lvl"""
-    if instance.chief is None:
-        Employee.objects.filter(pk=instance.pk).update(chief=instance, hierarchy_lvl_counter=1)
-    else:
-        instance_hierarchy_lvl_counter = instance.chief.hierarchy_lvl_counter + 1
-        Employee.objects.filter(pk=instance.pk).update(hierarchy_lvl_counter=instance_hierarchy_lvl_counter)
-
-
-post_save.connect(employee_post_save_chief_and_hierarchy_update, sender=Employee)
+        return f'{self.role} | {self.name} | уровень иерархии {self.depth}'
+    
